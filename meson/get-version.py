@@ -35,7 +35,7 @@ if __name__ == '__main__':
         have_git = shutil.which('git') is not None
 
         if is_git and have_git:
-            git_cmd = subprocess.run(['git', '--git-dir=' + git_dir, 'describe', 'HEAD'], stdout=subprocess.PIPE)
+            git_cmd = subprocess.run(['git', '--git-dir=' + git_dir, 'describe', '--tags', 'HEAD'], stdout=subprocess.PIPE)
             if git_cmd.returncode:
                 print('ERROR: Could not extract package version via `git describe` in', srcroot, file=sys.stderr)
                 sys.exit(-1)
