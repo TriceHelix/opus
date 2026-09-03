@@ -14,7 +14,7 @@ host_cpu_family = host_machine.cpu_family()
 top_srcdir = meson.current_source_dir()
 top_builddir = meson.current_build_dir()
 
-opus_includes = include_directories('.', 'include', 'celt', 'silk', 'dnn')
+opus_includes = include_directories('.', 'include', 'celt', 'silk')
 opus_public_includes = include_directories('include')
 
 add_project_arguments('-DOPUS_BUILD', language: 'c')
@@ -162,21 +162,6 @@ foreach opt : opts
   set_variable('opt_' + opt[0].underscorify(), opt_foo)
 endforeach
 
-feat = [
-  [ 'deep-plc', 'ENABLE_DEEP_PLC' ],
-  [ 'dred', 'ENABLE_DRED' ],
-  [ 'osce', 'ENABLE_OSCE' ],
-]
-
-foreach opt : feat
-  # we assume these are all boolean options
-  opt_foo = get_option(opt[0])
-  if opt_foo.enabled()
-    opus_conf.set(opt[1], 1)
-  endif
-  set_variable('opt_' + opt[0].underscorify(), opt_foo)
-endforeach
-
 opt_asm = get_option('asm')
 opt_rtcd = get_option('rtcd')
 opt_intrinsics = get_option('intrinsics')
@@ -188,9 +173,7 @@ if disable_float_api
   opus_conf.set('DISABLE_FLOAT_API', 1)
 endif
 
-if not get_option('dnn-debug-float').enabled()
-  opus_conf.set('DISABLE_DEBUG_FLOAT', 1)
-endif
+opus_conf.set('DISABLE_DEBUG_FLOAT', 1)
 
 # This is for the description in the pkg-config .pc file
 if opt_fixed_point
@@ -650,7 +633,6 @@ mk_files = [
   'opus_headers.mk', 'opus_sources.mk',
   'silk_headers.mk', 'silk_sources.mk',
   'celt_sources.mk', 'celt_headers.mk',
-  'lpcnet_headers.mk', 'lpcnet_sources.mk',
 ]
 lines = run_command('meson/read-sources-list.py', mk_files, check: true).stdout().strip().split('\n')
 sources = {}
@@ -664,7 +646,6 @@ endforeach
 subdir('include')
 subdir('celt')
 subdir('silk')
-subdir('dnn')
 subdir('src')
 
 configure_file(output: 'config.h', configuration: opus_conf)
